@@ -2,25 +2,28 @@ import { useState, useEffect } from 'react'
 import { Cloud, Wind, Waves, Eye, AlertTriangle, TrendingUp, Map as MapIcon } from 'lucide-react'
 import RiskGauge from './RiskGauge'
 import WeatherMap from './WeatherMap'
+import ForecastDetailModal from './ForecastDetailModal'
+
+interface ForecastHour {
+  timestamp: string
+  hour_offset: number
+  wind_speed_knots: number
+  wind_gust_knots: number
+  wind_direction: string
+  wave_height_m: number
+  wave_direction: string
+  visibility_km: number
+  sea_state: string
+  risk_score: number
+  precipitation_mm: number
+}
 
 interface WeatherForecast {
   location: { lat: number; lng: number }
   source: string
   demo_mode: boolean
   disclaimer?: string
-  forecast_hours: Array<{
-    timestamp: string
-    hour_offset: number
-    wind_speed_knots: number
-    wind_gust_knots: number
-    wind_direction: string
-    wave_height_m: number
-    wave_direction: string
-    visibility_km: number
-    sea_state: string
-    risk_score: number
-    precipitation_mm: number
-  }>
+  forecast_hours: ForecastHour[]
   alerts: Array<{
     type: string
     severity: string
@@ -33,6 +36,7 @@ export default function WeatherDashboard({ lat = 10.0, lng = 80.0 }: { lat?: num
   const [weather, setWeather] = useState<WeatherForecast | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedForecast, setSelectedForecast] = useState<ForecastHour | null>(null)
 
   useEffect(() => {
     fetchWeather()
@@ -177,13 +181,18 @@ export default function WeatherDashboard({ lat = 10.0, lng = 80.0 }: { lat?: num
 
       {/* Forecast Timeline */}
       <div className="weather-card p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">24-Hour Forecast</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">24-Hour Forecast</h3>
+        <p className="text-sm text-gray-600 mb-4">👆 Click any forecast card for detailed information</p>
         <div className="overflow-x-auto">
           <div className="flex gap-4 min-w-max">
             {weather.forecast_hours.map((hour, i) => {
               const hourRisk = getRiskColor(hour.risk_score)
               return (
-                <div key={i} className={`flex-shrink-0 w-24 p-3 rounded-lg border-2 status-${hourRisk}`}>
+                <button
+                  key={i}
+                  onClick={() => setSelectedForecast(hour)}
+                  className={`flex-shrink-0 w-24 p-3 rounded-lg border-2 status-${hourRisk} transition-all hover:scale-105 hover:shadow-lg cursor-pointer`}
+                >
                   <div className="text-xs font-medium text-gray-600 mb-2">
                     {hour.hour_offset === 0 ? 'Now' : `+${hour.hour_offset}h`}
                   </div>
@@ -206,7 +215,10 @@ export default function WeatherDashboard({ lat = 10.0, lng = 80.0 }: { lat?: num
                       <span className={`font-semibold text-${hourRisk}`}>{hour.risk_score}</span>
                     </div>
                   </div>
-                </div>
+                  <div className="mt-2 text-center">
+                    <span className="text-xs text-primary-500 font-semibold">View Details →</span>
+                  </div>
+                </button>
               )
             })}
           </div>
@@ -217,6 +229,14 @@ export default function WeatherDashboard({ lat = 10.0, lng = 80.0 }: { lat?: num
       <div className="text-center text-xs text-gray-500">
         Data source: {weather.source} | Location: {weather.location.lat.toFixed(2)}°N, {weather.location.lng.toFixed(2)}°E
       </div>
+
+      {/* Forecast Detail Modal */}
+      {selectedForecast && (
+        <ForecastDetailModal
+          forecast={selectedForecast}
+          onClose={() => setSelectedForecast(null)}
+        />
+      )}
     </div>
   )
 }
