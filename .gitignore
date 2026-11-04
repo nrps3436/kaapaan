@@ -2,3 +2,24 @@
 __pycache__/
 results/_raw/
 *.webm
+
+# Node modules
+node_modules/
+frontend/node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Database
+*.db
+*.db-journal
+
+# Build outputs
+frontend/dist/
+frontend/.vite/
+
+# Logs
+*.log
