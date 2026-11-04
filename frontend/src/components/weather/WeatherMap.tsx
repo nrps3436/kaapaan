@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -11,6 +11,8 @@ interface WeatherMapProps {
 export default function WeatherMap({ lat, lng, zoom = 6 }: WeatherMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<L.Map | null>(null)
+  const overlayRef = useRef<L.LayerGroup | null>(null)
+  const [activeLayer, setActiveLayer] = useState<string>('none')
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
@@ -18,11 +20,14 @@ export default function WeatherMap({ lat, lng, zoom = 6 }: WeatherMapProps) {
     // Initialize map
     const map = L.map(mapRef.current).setView([lat, lng], zoom)
 
-    // Use OpenStreetMap standard tiles (no API key required)
+    // Use OpenStreetMap standard tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution: '&copy; OpenStreetMap contributors',
       maxZoom: 19
     }).addTo(map)
+
+    // Create overlay layer group for demo visualizations
+    overlayRef.current = L.layerGroup().addTo(map)
 
     // Add location marker
     const marker = L.marker([lat, lng], {
@@ -65,8 +70,99 @@ export default function WeatherMap({ lat, lng, zoom = 6 }: WeatherMapProps) {
     return () => {
       map.remove()
       mapInstanceRef.current = null
+      overlayRef.current = null
     }
   }, [lat, lng, zoom])
+
+  const handleLayerChange = (layer: string) => {
+    if (!mapInstanceRef.current || !overlayRef.current) return
+
+    // Clear existing overlay
+    overlayRef.current.clearLayers()
+
+    if (layer === 'none') {
+      setActiveLayer('none')
+      return
+    }
+
+    // Demo mode: Add visual indicators for each layer type
+    const map = mapInstanceRef.current
+    const bounds = map.getBounds()
+    
+    // Create demo visualization based on layer type
+    if (layer === 'clouds') {
+      // Add semi-transparent circles to simulate cloud cover
+      for (let i = 0; i < 15; i++) {
+        const randomLat = bounds.getSouth() + Math.random() * (bounds.getNorth() - bounds.getSouth())
+        const randomLng = bounds.getWest() + Math.random() * (bounds.getEast() - bounds.getWest())
+        L.circle([randomLat, randomLng], {
+          radius: Math.random() * 30000 + 20000,
+          fillColor: '#FFFFFF',
+          fillOpacity: 0.3,
+          color: '#E5E7EB',
+          weight: 1
+        }).addTo(overlayRef.current)
+      }
+    } else if (layer === 'precipitation') {
+      // Add markers for precipitation areas
+      for (let i = 0; i < 8; i++) {
+        const randomLat = bounds.getSouth() + Math.random() * (bounds.getNorth() - bounds.getSouth())
+        const randomLng = bounds.getWest() + Math.random() * (bounds.getEast() - bounds.getWest())
+        L.circle([randomLat, randomLng], {
+          radius: Math.random() * 25000 + 15000,
+          fillColor: '#3B82F6',
+          fillOpacity: 0.2,
+          color: '#2563EB',
+          weight: 2
+        }).addTo(overlayRef.current)
+      }
+    } else if (layer === 'wind') {
+      // Add wind direction indicators
+      const centerLat = (bounds.getNorth() + bounds.getSouth()) / 2
+      const centerLng = (bounds.getEast() + bounds.getWest()) / 2
+      for (let i = 0; i < 20; i++) {
+        const angle = Math.random() * 360
+        const distance = Math.random() * 100000
+        const targetLat = centerLat + (distance / 111320) * Math.sin(angle * Math.PI / 180)
+        const targetLng = centerLng + (distance / (111320 * Math.cos(centerLat * Math.PI / 180))) * Math.cos(angle * Math.PI / 180)
+        L.polyline([[centerLat, centerLng], [targetLat, targetLng]], {
+          color: '#06B6D4',
+          weight: 2,
+          opacity: 0.4
+        }).addTo(overlayRef.current)
+      }
+    } else if (layer === 'temp') {
+      // Add temperature zones
+      L.circle([lat, lng], {
+        radius: 75000,
+        fillColor: '#EF4444',
+        fillOpacity: 0.15,
+        color: '#DC2626',
+        weight: 1
+      }).addTo(overlayRef.current)
+      L.circle([lat, lng], {
+        radius: 50000,
+        fillColor: '#F59E0B',
+        fillOpacity: 0.15,
+        color: '#D97706',
+        weight: 1
+      }).addTo(overlayRef.current)
+    } else if (layer === 'pressure') {
+      // Add pressure contours
+      for (let i = 1; i <= 3; i++) {
+        L.circle([lat, lng], {
+          radius: i * 40000,
+          fillColor: 'transparent',
+          color: '#8B5CF6',
+          weight: 2,
+          opacity: 0.4,
+          dashArray: '10, 5'
+        }).addTo(overlayRef.current)
+      }
+    }
+
+    setActiveLayer(layer)
+  }
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200">
@@ -95,22 +191,64 @@ export default function WeatherMap({ lat, lng, zoom = 6 }: WeatherMapProps) {
           </p>
         </div>
         <div className="p-2 space-y-1">
-          <button className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-blue-100 text-gray-900 shadow-sm ring-2 ring-blue-500">
+          <button
+            onClick={() => handleLayerChange('none')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              activeLayer === 'none'
+                ? 'bg-blue-100 text-gray-900 shadow-sm ring-2 ring-blue-500'
+                : 'text-gray-700 hover:bg-gray-50'
+            }`}
+          >
             🗺️ Base Map
           </button>
-          <button disabled className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-400 cursor-not-allowed">
+          <button
+            onClick={() => handleLayerChange('clouds')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              activeLayer === 'clouds'
+                ? 'bg-blue-100 text-gray-900 shadow-sm ring-2 ring-blue-500'
+                : 'text-gray-700 hover:bg-gray-50'
+            }`}
+          >
             ☁️ Cloud Cover
           </button>
-          <button disabled className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-400 cursor-not-allowed">
+          <button
+            onClick={() => handleLayerChange('precipitation')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              activeLayer === 'precipitation'
+                ? 'bg-indigo-100 text-gray-900 shadow-sm ring-2 ring-blue-500'
+                : 'text-gray-700 hover:bg-gray-50'
+            }`}
+          >
             🌧️ Precipitation
           </button>
-          <button disabled className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-400 cursor-not-allowed">
+          <button
+            onClick={() => handleLayerChange('pressure')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              activeLayer === 'pressure'
+                ? 'bg-purple-100 text-gray-900 shadow-sm ring-2 ring-blue-500'
+                : 'text-gray-700 hover:bg-gray-50'
+            }`}
+          >
             📊 Pressure
           </button>
-          <button disabled className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-400 cursor-not-allowed">
+          <button
+            onClick={() => handleLayerChange('wind')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              activeLayer === 'wind'
+                ? 'bg-cyan-100 text-gray-900 shadow-sm ring-2 ring-blue-500'
+                : 'text-gray-700 hover:bg-gray-50'
+            }`}
+          >
             💨 Wind Speed
           </button>
-          <button disabled className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-400 cursor-not-allowed">
+          <button
+            onClick={() => handleLayerChange('temp')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              activeLayer === 'temp'
+                ? 'bg-orange-100 text-gray-900 shadow-sm ring-2 ring-blue-500'
+                : 'text-gray-700 hover:bg-gray-50'
+            }`}
+          >
             🌡️ Temperature
           </button>
         </div>
