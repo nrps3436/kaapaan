@@ -2,52 +2,158 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Professional Maritime Theme - White/Black/Gray */
 body {
-  background-color: #0a0f1e;
-  color: #e2e8f0;
+  background-color: #FFFFFF;
+  color: #1F2937;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-/* Leaflet dark overrides */
+/* Leaflet overrides for light theme */
 .leaflet-container {
-  background: #0d1526 !important;
+  background: #F3F4F6 !important;
 }
 
 .leaflet-tile-pane {
-  filter: brightness(0.7) saturate(0.8);
+  filter: none;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - light theme */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d1526;
+  background: #F3F4F6;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1a2650;
-  border-radius: 3px;
+  background: #D1D5DB;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
 }
 
-/* Pulse animations */
-@keyframes ping-slow {
-  75%, 100% { transform: scale(2); opacity: 0; }
-}
-.animate-ping-slow {
-  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-/* SOS blink */
-@keyframes sos-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-.sos-blink {
-  animation: sos-blink 0.8s ease-in-out infinite;
+/* Status color indicators */
+.status-safe {
+  color: #22C55E;
+  background-color: #F0FDF4;
+  border-color: #86EFAC;
 }
 
-/* Custom marker pulse */
-.marker-safe { filter: drop-shadow(0 0 6px #22c55e); }
-.marker-warning { filter: drop-shadow(0 0 6px #f59e0b); }
-.marker-critical { filter: drop-shadow(0 0 8px #ef4444); }
-.marker-sos { filter: drop-shadow(0 0 12px #dc2626); animation: sos-blink 0.8s ease-in-out infinite; }
+.status-moderate {
+  color: #EAB308;
+  background-color: #FEFCE8;
+  border-color: #FDE047;
+}
+
+.status-high {
+  color: #F97316;
+  background-color: #FFF7ED;
+  border-color: #FDBA74;
+}
+
+.status-dangerous {
+  color: #DC2626;
+  background-color: #FEF2F2;
+  border-color: #FCA5A5;
+}
+
+/* Weather card styles */
+.weather-card {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.weather-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Risk score gauge */
+.risk-gauge {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.risk-gauge-bg {
+  stroke: #E5E7EB;
+}
+
+.risk-gauge-fill {
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+/* Wave animation for marine theme */
+@keyframes wave {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.wave-animate {
+  animation: wave 3s ease-in-out infinite;
+}
+
+/* Route line on map */
+.route-line-safe { stroke: #22C55E; }
+.route-line-moderate { stroke: #EAB308; }
+.route-line-high { stroke: #F97316; }
+.route-line-dangerous { stroke: #DC2626; }
+
+/* Alert banner */
+.alert-banner {
+  background: linear-gradient(to right, #FEF2F2, #FEE2E2);
+  border-left: 4px solid #DC2626;
+}
+
+/* Charts and graphs */
+.chart-line {
+  stroke-width: 2px;
+  fill: none;
+}
+
+/* Weather icon styles */
+.weather-icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Mobile responsive helpers */
+@media (max-width: 768px) {
+  .risk-gauge {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid #F3F4F6;
+  border-top: 3px solid #0EA5E9;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Demo mode badge */
+.demo-badge {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE047;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

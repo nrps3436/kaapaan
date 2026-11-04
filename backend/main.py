@@ -300,3 +300,91 @@ def get_geofences():
 @app.get("/api/health")
 def health():
     return {"status": "ok", "service": "KAAPPAAN Maritime Safety API", "timestamp": datetime.utcnow().isoformat()}
+
+# ── Weather Routes ────────────────────────────────────────────────────────────
+
+from .weather.imd_service import IMDWeatherService
+from .routes.planner import RoutePlanner
+
+# Initialize weather services (demo mode = True for development)
+weather_service = IMDWeatherService(demo_mode=True)
+route_planner = RoutePlanner(weather_service)
+
+
+@app.get("/api/weather/forecast")
+async def get_weather_forecast(lat: float, lng: float, hours: int = 24):
+    """Get marine weather forecast for location.
+    
+    Query params:
+        lat: Latitude
+        lng: Longitude
+        hours: Forecast hours (6, 12, 24, 48, 72)
+    """
+    try:
+        forecast = await weather_service.get_marine_forecast(lat, lng, hours)
+        return forecast
+    except Exception as e:
+        logger.error(f"Weather forecast error: {e}")
+        raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
+
+
+@app.get("/api/weather/cyclone")
+async def get_cyclone_info():
+    """Get active cyclone information for Bay of Bengal."""
+    try:
+        cyclone_data = await weather_service.get_cyclone_info()
+        return cyclone_data
+    except Exception as e:
+        logger.error(f"Cyclone info error: {e}")
+        raise HTTPException(status_code=500, detail=f"Cyclone service error: {str(e)}")
+
+
+class RoutePlanRequest(BaseModel):
+    start_lat: float
+    start_lng: float
+    end_lat: float
+    end_lng: float
+    vessel_speed_knots: float = 6.0
+    departure_time: Optional[str] = None
+
+
+@app.post("/api/routes/plan")
+async def plan_route(request: RoutePlanRequest):
+    """Plan a weather-aware route from start to end.
+    
+    Body:
+        start_lat, start_lng: Starting position
+        end_lat, end_lng: Destination
+        vessel_speed_knots: Average vessel speed (default 6 knots)
+        departure_time: ISO timestamp (optional, defaults to now)
+    """
+    try:
+        departure = None
+        if request.departure_time:
+            departure = datetime.fromisoformat(request.departure_time.replace('Z', '+00:00'))
+        
+        route = await route_planner.plan_route(
+            request.start_lat, request.start_lng,
+            request.end_lat, request.end_lng,
+            request.vessel_speed_knots,
+            departure
+        )
+        return route
+    except Exception as e:
+        logger.error(f"Route planning error: {e}")
+        raise HTTPException(status_code=500, detail=f"Route planning error: {str(e)}")
+
+
+@app.get("/api/weather/config")
+def get_weather_config():
+    """Get weather service configuration and mode."""
+    return {
+        "demo_mode": weather_service.demo_mode,
+        "sources": {
+            "imd": "India Meteorological Department",
+            "incois": "Indian National Centre for Ocean Information Services (future)",
+            "fallback": "Demonstration mode with synthetic data"
+        },
+        "update_interval_minutes": 180,  # 3 hours
+        "disclaimer": "Weather data is for planning purposes only. Always check official marine bulletins before departure."
+    }
