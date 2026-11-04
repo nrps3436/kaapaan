@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #0a0f1e;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Leaflet dark overrides */
+.leaflet-container {
+  background: #0d1526 !important;
+}
+
+.leaflet-tile-pane {
+  filter: brightness(0.7) saturate(0.8);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d1526;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a2650;
+  border-radius: 3px;
+}
+
+/* Pulse animations */
+@keyframes ping-slow {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+.animate-ping-slow {
+  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* SOS blink */
+@keyframes sos-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.sos-blink {
+  animation: sos-blink 0.8s ease-in-out infinite;
+}
+
+/* Custom marker pulse */
+.marker-safe { filter: drop-shadow(0 0 6px #22c55e); }
+.marker-warning { filter: drop-shadow(0 0 6px #f59e0b); }
+.marker-critical { filter: drop-shadow(0 0 8px #ef4444); }
+.marker-sos { filter: drop-shadow(0 0 12px #dc2626); animation: sos-blink 0.8s ease-in-out infinite; }
