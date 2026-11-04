@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Cloud, MapIcon, Ship, Radio, Activity, Menu, X } from 'lucide-react'
 import WeatherDashboard from './components/weather/WeatherDashboard'
 import RoutePlanner from './components/weather/RoutePlanner'
+import FleetManagement from './components/FleetManagement'
 
 type Page = 'weather' | 'routes' | 'fleet' | 'sos'
 
@@ -125,18 +126,16 @@ export default function App() {
             </div>
           )}
 
-          {/* Fleet Management - Coming Soon */}
+          {/* Fleet Management */}
           {page === 'fleet' && (
-            <div className="weather-card p-12 text-center">
-              <Ship className="mx-auto text-gray-400 mb-4" size={64} />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Fleet Management</h3>
-              <p className="text-gray-600 mb-6">
-                Real-time vessel tracking, communication, and trip logging coming soon.
-              </p>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium">
-                <Activity size={16} />
-                Under Development
+            <div>
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Live Fleet Tracking</h3>
+                <p className="text-sm text-gray-600">
+                  Real-time GPS tracking of all vessels with status monitoring, battery levels, and signal strength.
+                </p>
               </div>
+              <FleetManagement />
             </div>
           )}
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { MapPin, Navigation, Clock, AlertTriangle, CheckCircle } from 'lucide-react'
+import { MapPin, Navigation, Clock, AlertTriangle, CheckCircle, Map } from 'lucide-react'
+import RouteMap from './RouteMap'
 
 interface RouteResult {
   total_distance_nm: number
@@ -67,7 +68,10 @@ export default function RoutePlanner() {
     <div className="space-y-6">
       {/* Route Input Form */}
       <div className="weather-card p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Plan Weather-Aware Route</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Map size={20} className="text-primary-500" />
+          Plan Weather-Aware Route
+        </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {/* Start Location */}
@@ -143,9 +147,19 @@ export default function RoutePlanner() {
         <button
           onClick={planRoute}
           disabled={loading}
-          className="w-full md:w-auto px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full md:w-auto px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
-          {loading ? 'Planning Route...' : 'Calculate Route with Weather'}
+          {loading ? (
+            <>
+              <div className="spinner w-5 h-5 border-2"></div>
+              Planning Route...
+            </>
+          ) : (
+            <>
+              <Navigation size={18} />
+              Calculate Route with Weather
+            </>
+          )}
         </button>
       </div>
 
@@ -200,6 +214,19 @@ export default function RoutePlanner() {
             </div>
           </div>
 
+          {/* Interactive Map */}
+          <div className="weather-card p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Map size={20} className="text-primary-500" />
+              Route Visualization with Weather Risk
+            </h3>
+            <RouteMap 
+              waypoints={route.waypoints}
+              startLabel={`Start (${startLat}, ${startLng})`}
+              endLabel={`Destination (${endLat}, ${endLng})`}
+            />
+          </div>
+
           {/* Waypoints */}
           <div className="weather-card p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Route Waypoints with Weather</h3>
@@ -209,11 +236,11 @@ export default function RoutePlanner() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="font-semibold text-gray-900">
-                        Waypoint {i + 1}: {wp.lat.toFixed(3)}°N, {wp.lng.toFixed(3)}°E
+                        {i === 0 ? '🚢 Start' : i === route.waypoints.length - 1 ? '🎯 Destination' : `Waypoint ${i + 1}`}: {wp.lat.toFixed(3)}°N, {wp.lng.toFixed(3)}°E
                       </div>
                       <div className="text-sm text-gray-600 mt-1">
                         Wind: {wp.weather.wind_speed_knots}kt | Wave: {wp.weather.wave_height_m}m | 
-                        Visibility: {wp.weather.visibility_km}km
+                        Visibility: {wp.weather.visibility_km}km | Sea: {wp.weather.sea_state}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
                         ETA: {new Date(wp.eta).toLocaleString()}
@@ -234,7 +261,7 @@ export default function RoutePlanner() {
           </div>
 
           {route.demo_mode && (
-            <div className="text-center text-xs text-yellow-700 bg-yellow-50 py-2 px-4 rounded-lg">
+            <div className="text-center text-xs text-yellow-700 bg-yellow-50 py-2 px-4 rounded-lg border border-yellow-200">
               🔶 Using demonstration weather data for route planning
             </div>
           )}
