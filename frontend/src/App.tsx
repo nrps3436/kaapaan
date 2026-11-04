@@ -3,6 +3,7 @@ import { Cloud, MapIcon, Ship, Radio, Activity, Menu, X } from 'lucide-react'
 import WeatherDashboard from './components/weather/WeatherDashboard'
 import RoutePlanner from './components/weather/RoutePlanner'
 import FleetManagement from './components/FleetManagement'
+import SOSSystem from './components/SOSSystem'
 
 type Page = 'weather' | 'routes' | 'fleet' | 'sos'
 
@@ -139,18 +140,16 @@ export default function App() {
             </div>
           )}
 
-          {/* Emergency SOS - Coming Soon */}
+          {/* Emergency SOS System */}
           {page === 'sos' && (
-            <div className="weather-card p-12 text-center">
-              <Radio className="mx-auto text-red-400 mb-4" size={64} />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Emergency SOS System</h3>
-              <p className="text-gray-600 mb-6">
-                One-click emergency alerts with automatic coast guard notification.
-              </p>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium">
-                <Activity size={16} />
-                Under Development
+            <div>
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Emergency SOS System</h3>
+                <p className="text-sm text-gray-600">
+                  One-click emergency alerts with automatic coast guard notification and real-time incident tracking.
+                </p>
               </div>
+              <SOSSystem />
             </div>
           )}
         </div>
