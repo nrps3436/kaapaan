@@ -5,13 +5,20 @@ import RoutePlanner from './components/weather/RoutePlanner'
 import FleetManagement from './components/FleetManagement'
 import SOSSystem from './components/SOSSystem'
 import LoadingScreen from './components/LoadingScreen'
+import LandingPage from './components/LandingPage'
 
 type Page = 'weather' | 'routes' | 'fleet' | 'sos'
 
 export default function App() {
-  const [loading, setLoading] = useState(true)
+  const [showLanding, setShowLanding] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [page, setPage] = useState<Page>('weather')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  const handleEnterApp = () => {
+    setShowLanding(false)
+    setLoading(true)
+  }
 
   const navItems: { id: Page; label: string; icon: React.ReactNode }[] = [
     { id: 'weather', label: 'Weather Forecast', icon: <Cloud size={20} /> },
@@ -19,6 +26,10 @@ export default function App() {
     { id: 'fleet', label: 'Fleet Management', icon: <Ship size={20} /> },
     { id: 'sos', label: 'Emergency SOS', icon: <Radio size={20} /> },
   ]
+
+  if (showLanding) {
+    return <LandingPage onEnter={handleEnterApp} />
+  }
 
   if (loading) {
     return <LoadingScreen onLoadComplete={() => setLoading(false)} />
