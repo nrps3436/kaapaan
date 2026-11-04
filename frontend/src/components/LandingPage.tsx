@@ -16,8 +16,8 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                 <Ship size={32} />
               </div>
               <div>
-                <h1 className="nav-title">KAAPPAAN</h1>
-                <p className="nav-subtitle">காப்பான்</p>
+                <h1 className="nav-title tamil-title">காப்பான்</h1>
+                <p className="nav-subtitle">Maritime Safety</p>
               </div>
             </div>
             <div className="nav-links">
@@ -175,7 +175,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
           <div className="cta-content">
             <h2 className="cta-title">Ready to Sail Safer?</h2>
             <p className="cta-description">
-              Join thousands of fishermen using KAAPPAAN for safer maritime operations
+              Join thousands of fishermen using காப்பான் for safer maritime operations
             </p>
             <button onClick={onEnter} className="cta-button">
               Launch Platform Now
@@ -194,12 +194,12 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                 <Ship size={40} />
               </div>
               <div>
-                <h3 className="footer-title">KAAPPAAN</h3>
+                <h3 className="footer-title tamil-title">காப்பான்</h3>
                 <p className="footer-subtitle">Maritime Safety Platform</p>
               </div>
             </div>
             <p className="footer-text">
-              &copy; 2024 KAAPPAAN. Protecting fishermen in the Bay of Bengal.
+              &copy; 2024 காப்பான் (KAAPPAAN). Protecting fishermen in the Bay of Bengal.
               <br />
               Final Year Project - Maritime Safety &amp; Navigation System
             </p>

@@ -1512,3 +1512,22 @@ body {
   animation: slideUp 0.3s ease-out;
 }
 
+
+/* Tamil Text Styling */
+.tamil-title {
+  font-family: 'Noto Sans Tamil', 'Lohit Tamil', 'Tamil MN', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+
+/* Weather Map Marker Pulse Animation */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6), 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.8), 0 0 0 12px rgba(59, 130, 246, 0);
+  }
+}
+
