@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Cloud, Wind, Waves, Eye, AlertTriangle, TrendingUp } from 'lucide-react'
-import { api } from '../../api/client'
+import RiskGauge from './RiskGauge'
 
 interface WeatherForecast {
   location: { lat: number; lng: number }
@@ -118,50 +118,50 @@ export default function WeatherDashboard({ lat = 10.0, lng = 80.0 }: { lat?: num
         </div>
       )}
 
-      {/* Current Conditions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Wind */}
-        <div className="weather-card p-5">
-          <div className="flex items-center justify-between mb-3">
-            <Wind className="text-primary-500" size={28} />
-            <span className="text-xs text-gray-500 uppercase tracking-wider">Wind</span>
+      {/* Current Conditions with Risk Gauge */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Weather Metrics */}
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Wind */}
+          <div className="weather-card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <Wind className="text-primary-500" size={28} />
+              <span className="text-xs text-gray-500 uppercase tracking-wider">Wind</span>
+            </div>
+            <div className="text-3xl font-bold text-gray-900">{current.wind_speed_knots}</div>
+            <div className="text-sm text-gray-600">knots {current.wind_direction}</div>
+            <div className="text-xs text-gray-500 mt-1">Gusts: {current.wind_gust_knots}kt</div>
           </div>
-          <div className="text-3xl font-bold text-gray-900">{current.wind_speed_knots}</div>
-          <div className="text-sm text-gray-600">knots {current.wind_direction}</div>
-          <div className="text-xs text-gray-500 mt-1">Gusts: {current.wind_gust_knots}kt</div>
+
+          {/* Wave Height */}
+          <div className="weather-card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <Waves className="text-primary-500 wave-animate" size={28} />
+              <span className="text-xs text-gray-500 uppercase tracking-wider">Waves</span>
+            </div>
+            <div className="text-3xl font-bold text-gray-900">{current.wave_height_m}</div>
+            <div className="text-sm text-gray-600">meters {current.wave_direction}</div>
+            <div className="text-xs text-gray-500 mt-1">State: {current.sea_state}</div>
+          </div>
+
+          {/* Visibility */}
+          <div className="weather-card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <Eye className="text-primary-500" size={28} />
+              <span className="text-xs text-gray-500 uppercase tracking-wider">Visibility</span>
+            </div>
+            <div className="text-3xl font-bold text-gray-900">{current.visibility_km}</div>
+            <div className="text-sm text-gray-600">kilometers</div>
+            <div className="text-xs text-gray-500 mt-1">&nbsp;</div>
+          </div>
         </div>
 
-        {/* Wave Height */}
-        <div className="weather-card p-5">
-          <div className="flex items-center justify-between mb-3">
-            <Waves className="text-primary-500 wave-animate" size={28} />
-            <span className="text-xs text-gray-500 uppercase tracking-wider">Waves</span>
-          </div>
-          <div className="text-3xl font-bold text-gray-900">{current.wave_height_m}</div>
-          <div className="text-sm text-gray-600">meters {current.wave_direction}</div>
-          <div className="text-xs text-gray-500 mt-1">State: {current.sea_state}</div>
-        </div>
-
-        {/* Visibility */}
-        <div className="weather-card p-5">
-          <div className="flex items-center justify-between mb-3">
-            <Eye className="text-primary-500" size={28} />
-            <span className="text-xs text-gray-500 uppercase tracking-wider">Visibility</span>
-          </div>
-          <div className="text-3xl font-bold text-gray-900">{current.visibility_km}</div>
-          <div className="text-sm text-gray-600">kilometers</div>
-          <div className="text-xs text-gray-500 mt-1">&nbsp;</div>
-        </div>
-
-        {/* Risk Score */}
-        <div className={`weather-card p-5 border-2 status-${riskLevel}`}>
-          <div className="flex items-center justify-between mb-3">
-            <TrendingUp className={`text-${riskLevel}`} size={28} />
-            <span className="text-xs uppercase tracking-wider font-semibold">Risk</span>
-          </div>
-          <div className="text-3xl font-bold">{current.risk_score}</div>
-          <div className="text-sm font-semibold uppercase">{riskLevel}</div>
-          <div className="text-xs mt-1">Conditions</div>
+        {/* Right: Risk Gauge Speedometer */}
+        <div className="weather-card p-6 flex flex-col items-center justify-center">
+          <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
+            Current Risk Assessment
+          </h3>
+          <RiskGauge riskScore={current.risk_score} size={220} />
         </div>
       </div>
 
