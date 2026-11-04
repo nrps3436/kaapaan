@@ -13,9 +13,12 @@ export default function WeatherMap({ lat, lng, zoom = 6 }: WeatherMapProps) {
   const mapInstanceRef = useRef<L.Map | null>(null)
   const weatherLayersRef = useRef<{ [key: string]: L.TileLayer }>({})
   const [activeLayer, setActiveLayer] = useState<string>('none')
-  const [apiKeyStatus, setApiKeyStatus] = useState<'checking' | 'valid' | 'invalid'>('checking')
+  const [apiKeyStatus, setApiKeyStatus] = useState<'checking' | 'valid' | 'invalid'>('invalid')
 
-  const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY || 'demo'
+  // Safely get API key from environment
+  const API_KEY = typeof import.meta !== 'undefined' && import.meta.env ? 
+    (import.meta.env.VITE_OPENWEATHER_API_KEY as string) || 'demo' : 
+    'demo'
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
@@ -52,43 +55,23 @@ export default function WeatherMap({ lat, lng, zoom = 6 }: WeatherMapProps) {
     weatherLayersRef.current = {
       clouds: L.tileLayer(
         `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
-        {
-          attribution: 'Weather © OpenWeatherMap',
-          opacity: 0.6,
-          maxZoom: 19
-        }
+        { attribution: 'Weather © OpenWeatherMap', opacity: 0.6, maxZoom: 19 }
       ),
       precipitation: L.tileLayer(
         `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
-        {
-          attribution: 'Weather © OpenWeatherMap',
-          opacity: 0.6,
-          maxZoom: 19
-        }
+        { attribution: 'Weather © OpenWeatherMap', opacity: 0.6, maxZoom: 19 }
       ),
       pressure: L.tileLayer(
         `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
-        {
-          attribution: 'Weather © OpenWeatherMap',
-          opacity: 0.6,
-          maxZoom: 19
-        }
+        { attribution: 'Weather © OpenWeatherMap', opacity: 0.6, maxZoom: 19 }
       ),
       wind: L.tileLayer(
         `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
-        {
-          attribution: 'Weather © OpenWeatherMap',
-          opacity: 0.5,
-          maxZoom: 19
-        }
+        { attribution: 'Weather © OpenWeatherMap', opacity: 0.5, maxZoom: 19 }
       ),
       temp: L.tileLayer(
         `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
-        {
-          attribution: 'Weather © OpenWeatherMap',
-          opacity: 0.6,
-          maxZoom: 19
-        }
+        { attribution: 'Weather © OpenWeatherMap', opacity: 0.6, maxZoom: 19 }
       )
     }
 
@@ -279,7 +262,7 @@ export default function WeatherMap({ lat, lng, zoom = 6 }: WeatherMapProps) {
             <p className="text-xs text-yellow-800 flex items-center gap-2">
               <span role="img" aria-label="Warning">⚠️</span>
               <span className="font-medium">
-                {apiKeyStatus === 'checking' ? 'Checking API...' : 'Add API key for layers'}
+                {apiKeyStatus === 'checking' ? 'Checking API...' : 'Demo Mode'}
               </span>
             </p>
           </div>
