@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Cloud, Wind, Waves, Eye, AlertTriangle, TrendingUp } from 'lucide-react'
+import { Cloud, Wind, Waves, Eye, AlertTriangle, TrendingUp, Map as MapIcon } from 'lucide-react'
 import RiskGauge from './RiskGauge'
+import WeatherMap from './WeatherMap'
 
 interface WeatherForecast {
   location: { lat: number; lng: number }
@@ -117,6 +118,15 @@ export default function WeatherDashboard({ lat = 10.0, lng = 80.0 }: { lat?: num
           ))}
         </div>
       )}
+
+      {/* Weather Map */}
+      <div className="weather-card p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <MapIcon size={20} className="text-primary-500" />
+          Live Weather Map - Bay of Bengal
+        </h3>
+        <WeatherMap lat={lat} lng={lng} />
+      </div>
 
       {/* Current Conditions with Risk Gauge */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

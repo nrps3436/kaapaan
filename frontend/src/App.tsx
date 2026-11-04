@@ -4,10 +4,12 @@ import WeatherDashboard from './components/weather/WeatherDashboard'
 import RoutePlanner from './components/weather/RoutePlanner'
 import FleetManagement from './components/FleetManagement'
 import SOSSystem from './components/SOSSystem'
+import LoadingScreen from './components/LoadingScreen'
 
 type Page = 'weather' | 'routes' | 'fleet' | 'sos'
 
 export default function App() {
+  const [loading, setLoading] = useState(true)
   const [page, setPage] = useState<Page>('weather')
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
@@ -17,6 +19,10 @@ export default function App() {
     { id: 'fleet', label: 'Fleet Management', icon: <Ship size={20} /> },
     { id: 'sos', label: 'Emergency SOS', icon: <Radio size={20} /> },
   ]
+
+  if (loading) {
+    return <LoadingScreen onLoadComplete={() => setLoading(false)} />
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">

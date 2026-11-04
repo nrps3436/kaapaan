@@ -169,3 +169,199 @@ body {
 .ping {
   animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROFESSIONAL DATAFRAME STYLES (Pandas/Streamlit/Notion-inspired)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dataframe-container {
+  @apply w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm;
+}
+
+.dataframe-wrapper {
+  @apply w-full overflow-x-auto;
+}
+
+.dataframe-table {
+  @apply w-full border-collapse text-sm;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sticky Header */
+.dataframe-header {
+  @apply sticky top-0 z-10 bg-gradient-to-b from-gray-50 to-gray-100 border-b-2 border-gray-300;
+}
+
+.dataframe-header th {
+  @apply font-semibold text-gray-700 uppercase tracking-wide text-xs;
+  border-right: 1px solid #E5E7EB;
+  white-space: nowrap;
+}
+
+.dataframe-header th:last-child {
+  border-right: none;
+}
+
+/* Zebra Striping */
+.dataframe-body tr:nth-child(odd) {
+  @apply bg-white;
+}
+
+.dataframe-body tr:nth-child(even) {
+  @apply bg-gray-50;
+}
+
+/* Row Hover Effect */
+.dataframe-row {
+  @apply transition-colors duration-150 border-b border-gray-200;
+}
+
+.dataframe-row:hover {
+  @apply bg-blue-50 shadow-sm;
+}
+
+/* Cell Borders */
+.dataframe-body td {
+  @apply text-gray-900;
+  border-right: 1px solid #F3F4F6;
+}
+
+.dataframe-body td:last-child {
+  border-right: none;
+}
+
+/* Monospaced Numbers */
+.dataframe-table .font-mono {
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .dataframe-container {
+    @apply border-gray-700 bg-gray-900;
+  }
+  
+  .dataframe-header {
+    @apply bg-gradient-to-b from-gray-800 to-gray-900 border-gray-600;
+  }
+  
+  .dataframe-header th {
+    @apply text-gray-300;
+    border-right-color: #374151;
+  }
+  
+  .dataframe-body tr:nth-child(odd) {
+    @apply bg-gray-900;
+  }
+  
+  .dataframe-body tr:nth-child(even) {
+    @apply bg-gray-800;
+  }
+  
+  .dataframe-row:hover {
+    @apply bg-gray-700;
+  }
+  
+  .dataframe-body td {
+    @apply text-gray-100 border-gray-700;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CLOUD ANIMATION ON APP LOAD
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes cloudFloat {
+  0%, 100% {
+    transform: translateX(-100px) translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(100vw) translateY(-20px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.loading-screen {
+  @apply fixed inset-0 z-50 flex flex-col items-center justify-center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  animation: fadeIn 0.3s ease-in;
+}
+
+.loading-screen.fade-out {
+  animation: fadeIn 0.5s ease-out reverse;
+}
+
+.cloud-animation {
+  position: absolute;
+  font-size: 4rem;
+  animation: cloudFloat 8s ease-in-out infinite;
+}
+
+.cloud-animation:nth-child(1) {
+  top: 20%;
+  animation-delay: 0s;
+}
+
+.cloud-animation:nth-child(2) {
+  top: 40%;
+  animation-delay: 2s;
+  animation-duration: 10s;
+}
+
+.cloud-animation:nth-child(3) {
+  top: 60%;
+  animation-delay: 4s;
+  animation-duration: 12s;
+}
+
+.loading-content {
+  animation: slideUp 0.8s ease-out;
+}
+
+.loading-spinner {
+  @apply w-16 h-16 border-4 border-white border-t-transparent rounded-full;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Maritime Wave Animation */
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-5px) scaleY(1.1);
+  }
+}
+
+.wave-animate {
+  animation: wave 2s ease-in-out infinite;
+}
+
