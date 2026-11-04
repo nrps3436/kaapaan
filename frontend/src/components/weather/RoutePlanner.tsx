@@ -64,116 +64,138 @@ export default function RoutePlanner() {
     }
   }
 
+  // Create preview waypoints from input coordinates
+  const previewWaypoints = !route && startLat && startLng && endLat && endLng ? [
+    {
+      lat: parseFloat(startLat),
+      lng: parseFloat(startLng),
+      risk_score: 0,
+      risk_level: 'Preview',
+      risk_color: '#3B82F6',
+      weather: null,
+      eta: ''
+    },
+    {
+      lat: parseFloat(endLat),
+      lng: parseFloat(endLng),
+      risk_score: 0,
+      risk_level: 'Preview',
+      risk_color: '#3B82F6',
+      weather: null,
+      eta: ''
+    }
+  ] : null
+
   return (
-    <div className="space-y-6">
-      {/* Route Input Form */}
-      <div className="weather-card p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Map size={20} className="text-primary-500" />
-          Plan Weather-Aware Route
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          {/* Start Location */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <MapPin className="inline mr-1" size={16} />
-              Start Location
-            </label>
-            <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Left Column: Form and Results */}
+      <div className="space-y-6">
+        {/* Route Input Form */}
+        <div className="weather-card p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Map size={20} className="text-primary-500" />
+            Plan Weather-Aware Route
+          </h3>
+          
+          <div className="space-y-4">
+            {/* Start Location */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <MapPin className="inline mr-1" size={16} />
+                Start Location
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="Latitude"
+                  value={startLat}
+                  onChange={e => setStartLat(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="Longitude"
+                  value={startLng}
+                  onChange={e => setStartLng(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+            </div>
+
+            {/* End Location */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Navigation className="inline mr-1" size={16} />
+                Destination
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="Latitude"
+                  value={endLat}
+                  onChange={e => setEndLat(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="Longitude"
+                  value={endLng}
+                  onChange={e => setEndLng(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+            </div>
+
+            {/* Vessel Speed */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Clock className="inline mr-1" size={16} />
+                Vessel Speed (knots)
+              </label>
               <input
                 type="number"
-                step="0.01"
-                placeholder="Latitude"
-                value={startLat}
-                onChange={e => setStartLat(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-              <input
-                type="number"
-                step="0.01"
-                placeholder="Longitude"
-                value={startLng}
-                onChange={e => setStartLng(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                step="0.5"
+                min="1"
+                max="20"
+                value={speed}
+                onChange={e => setSpeed(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
-          </div>
 
-          {/* End Location */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Navigation className="inline mr-1" size={16} />
-              Destination
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="number"
-                step="0.01"
-                placeholder="Latitude"
-                value={endLat}
-                onChange={e => setEndLat(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-              <input
-                type="number"
-                step="0.01"
-                placeholder="Longitude"
-                value={endLng}
-                onChange={e => setEndLng(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
+            <button
+              onClick={planRoute}
+              disabled={loading}
+              className="w-full px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="spinner w-5 h-5 border-2"></div>
+                  Planning Route...
+                </>
+              ) : (
+                <>
+                  <Navigation size={18} />
+                  Calculate Route with Weather
+                </>
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Vessel Speed */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <Clock className="inline mr-1" size={16} />
-            Vessel Speed (knots)
-          </label>
-          <input
-            type="number"
-            step="0.5"
-            min="1"
-            max="20"
-            value={speed}
-            onChange={e => setSpeed(e.target.value)}
-            className="w-full md:w-48 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          />
-        </div>
+        {/* Error */}
+        {error && (
+          <div className="weather-card p-4 border-l-4 border-red-500 bg-red-50">
+            <p className="text-red-700">{error}</p>
+          </div>
+        )}
 
-        <button
-          onClick={planRoute}
-          disabled={loading}
-          className="w-full md:w-auto px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-        >
-          {loading ? (
-            <>
-              <div className="spinner w-5 h-5 border-2"></div>
-              Planning Route...
-            </>
-          ) : (
-            <>
-              <Navigation size={18} />
-              Calculate Route with Weather
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="weather-card p-4 border-l-4 border-red-500 bg-red-50">
-          <p className="text-red-700">{error}</p>
-        </div>
-      )}
-
-      {/* Route Result */}
-      {route && (
-        <div className="space-y-6">
-          {/* Route Summary */}
+        {/* Route Summary */}
+        {route && (
           <div className={`weather-card p-6 border-2 ${
             route.overall_risk.status === 'recommended'
               ? 'border-green-500 bg-green-50'
@@ -213,24 +235,13 @@ export default function RoutePlanner() {
               </div>
             </div>
           </div>
+        )}
 
-          {/* Interactive Map */}
-          <div className="weather-card p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Map size={20} className="text-primary-500" />
-              Route Visualization with Weather Risk
-            </h3>
-            <RouteMap 
-              waypoints={route.waypoints}
-              startLabel={`Start (${startLat}, ${startLng})`}
-              endLabel={`Destination (${endLat}, ${endLng})`}
-            />
-          </div>
-
-          {/* Waypoints */}
+        {/* Waypoints */}
+        {route && (
           <div className="weather-card p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Route Waypoints with Weather</h3>
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
               {route.waypoints.map((wp, i) => (
                 <div key={i} className={`p-4 rounded-lg border-l-4`} style={{ borderColor: wp.risk_color, backgroundColor: `${wp.risk_color}10` }}>
                   <div className="flex items-start justify-between">
@@ -259,14 +270,45 @@ export default function RoutePlanner() {
               ))}
             </div>
           </div>
+        )}
 
-          {route.demo_mode && (
-            <div className="text-center text-xs text-yellow-700 bg-yellow-50 py-2 px-4 rounded-lg border border-yellow-200">
-              🔶 Using demonstration weather data for route planning
-            </div>
-          )}
-        </div>
-      )}
+        {route?.demo_mode && (
+          <div className="text-center text-xs text-yellow-700 bg-yellow-50 py-2 px-4 rounded-lg border border-yellow-200">
+            🔶 Using demonstration weather data for route planning
+          </div>
+        )}
+      </div>
+
+      {/* Right Column: Interactive Map (Always Visible) */}
+      <div className="weather-card p-6 lg:sticky lg:top-24 lg:self-start">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Map size={20} className="text-primary-500" />
+          {route ? 'Route with Weather Risk' : 'Preview Map'}
+        </h3>
+        
+        {route ? (
+          <RouteMap 
+            waypoints={route.waypoints}
+            startLabel={`Start (${startLat}, ${startLng})`}
+            endLabel={`Destination (${endLat}, ${endLng})`}
+          />
+        ) : previewWaypoints ? (
+          <div>
+            <RouteMap 
+              waypoints={previewWaypoints}
+              startLabel="Start Location"
+              endLabel="Destination"
+            />
+            <p className="text-sm text-gray-600 mt-3 text-center">
+              Click "Calculate Route" to see weather risk assessment
+            </p>
+          </div>
+        ) : (
+          <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">
+            <p className="text-gray-500">Enter coordinates to preview route</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
