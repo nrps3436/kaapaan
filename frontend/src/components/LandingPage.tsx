@@ -5,6 +5,13 @@ interface LandingPageProps {
 }
 
 export default function LandingPage({ onEnter }: LandingPageProps) {
+  const scrollToFeatures = () => {
+    const featuresSection = document.getElementById('features')
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
     <div className="landing-page">
       {/* Navigation */}
@@ -65,7 +72,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                 Get Started
                 <ArrowRight size={20} />
               </button>
-              <button className="btn-secondary">
+              <button onClick={scrollToFeatures} className="btn-secondary">
                 Learn More
               </button>
             </div>
